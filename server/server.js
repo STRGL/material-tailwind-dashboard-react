@@ -1,24 +1,18 @@
 import * as dotenv from 'dotenv'
 import express from 'express'
-import spotify from './server/music/spotify.js'
+
+import apiRoutes from './index.js'
 
 dotenv.config()
 
 const app = express();
-const PORT = process.env.SERVER_PORT
-
+const PORT = process.env.SERVER_PORT || 8000;
 
 app.get("/", (req, res) => {
-    const data = {
-      name: "Daryll",
-      age: "too old",
-    };
+  res.send('Welcome to the route of the Express server.');
+});
 
-    res.json(data);
-  });
-
-app.use(spotify);
-
+app.use('/api', apiRoutes);
 
 app.listen(PORT, () => {
     console.log(`Express app listening at http://localhost:${PORT}`)

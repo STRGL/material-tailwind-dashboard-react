@@ -11,7 +11,7 @@ const PORT = process.env.SERVER_PORT
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
-const REDIRECT_URI = `http://localhost:${PORT}/callback`;
+const REDIRECT_URI = `http://localhost:${PORT}/api/music/spotify/callback`;
 
 const stateKey = "spotify_auth_state";
 const scopes = ["user-read-private", "user-read-email"];
@@ -58,7 +58,7 @@ app.get("/callback", async (req, res) => {
         refresh_token
       });
 
-      res.redirect(`http://localhost:5173/dashboard/music?${queryParams}`)
+      res.redirect(`http://localhost:5173/dashboard/music/?${queryParams}`)
 
     } else {
       res.redirect(`/?${queryString.stringify({error: 'invalid_token'})}`);
@@ -69,6 +69,7 @@ app.get("/callback", async (req, res) => {
 });
 
 app.get("/refresh_token", async (req, res) => {
+  console.log('REFRESH TOKEN REQ')
   try {
     const { refresh_token } = req.query;
 

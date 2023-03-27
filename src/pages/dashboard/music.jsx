@@ -6,17 +6,22 @@ export function Music() {
         const urlParams = new URLSearchParams(queryString);
         const accessToken = urlParams.get('access_token');
         const refreshToken = urlParams.get('refresh_token');
+                
         
-        console.log("🚀 ~ file: music.jsx:8 ~ useEffect ~ accessToken:", accessToken)
-        console.log("🚀 ~ file: music.jsx:9 ~ useEffect ~ refreshToken:", refreshToken)
-
-    }, [])
-
+          if(refreshToken) {
+            fetch(`/api/music/spotify/refresh_token?refresh_token=${refreshToken}`)
+            .then(res => res.json())
+            .then(data => console.log(data))
+            .catch(err => console.error(err));
+          }
+    }, []);
 
   return (
-    <a className="App-link" href="http://localhost:8888/login">
-          Log in to Spotify
-    </a>
+    <React.Fragment>
+      <a className="App-link" href="http://localhost:8888/api/music/spotify/login">
+            Log in to Spotify
+      </a>
+    </React.Fragment>
   );
 }
 
