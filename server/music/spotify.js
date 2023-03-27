@@ -33,6 +33,7 @@ app.get("/login", (req, res) => {
 app.get("/callback", async (req, res) => {
   try {
     const code = req.query.code || null;
+
     const response = await axios({
       method: "post",
       url: "https://accounts.spotify.com/api/token",
@@ -50,15 +51,17 @@ app.get("/callback", async (req, res) => {
     });
 
     if (response.status === 200) {
-      const { refresh_token } = response.data;
+      const { access_token, refresh_token } = response.data;
 
-      const profileResponse = await axios.get(
-        `http://localhost:8888/refresh_token?refresh_token=${refresh_token}`
-      );
+      const queryParams = queryString.stringify({
+        access_token, 
+        refresh_token
+      });
 
-      res.send(`<pre>${JSON.stringify(profileResponse.data, null, 2)}</pre>`);
+      res.redirect(`http://localhost:5173/dashboard/music?${queryParams}`)
+
     } else {
-      res.send(response);
+      res.redirect(`/?${queryString.stringify({error: 'invalid_token'})}`);
     }
   } catch (error) {
     res.send(error);

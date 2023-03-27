@@ -7,7 +7,6 @@ dotenv.config()
 const app = express();
 const PORT = process.env.SERVER_PORT
 
-console.log('PORT: ', PORT)
 
 app.get("/", (req, res) => {
     const data = {
