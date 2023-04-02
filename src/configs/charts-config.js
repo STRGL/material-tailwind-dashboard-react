@@ -1,61 +1,61 @@
 export const chartsConfig = {
   chart: {
     toolbar: {
-      show: false,
-    },
+      show: false
+    }
   },
   title: {
-    show: "",
+    show: ''
   },
   dataLabels: {
-    enabled: false,
+    enabled: false
   },
   xaxis: {
     axisTicks: {
-      show: false,
+      show: false
     },
     axisBorder: {
-      show: false,
+      show: false
     },
     labels: {
       style: {
-        colors: "#fff",
-        fontSize: "13px",
-        fontFamily: "inherit",
-        fontWeight: 300,
-      },
-    },
+        colors: '#fff',
+        fontSize: '13px',
+        fontFamily: 'inherit',
+        fontWeight: 300
+      }
+    }
   },
   yaxis: {
     labels: {
       style: {
-        colors: "#fff",
-        fontSize: "13px",
-        fontFamily: "inherit",
-        fontWeight: 300,
-      },
-    },
+        colors: '#fff',
+        fontSize: '13px',
+        fontFamily: 'inherit',
+        fontWeight: 300
+      }
+    }
   },
   grid: {
     show: true,
-    borderColor: "#ffffff40",
+    borderColor: '#ffffff40',
     strokeDashArray: 5,
     xaxis: {
       lines: {
-        show: true,
-      },
+        show: true
+      }
     },
     padding: {
       top: 5,
-      right: 20,
-    },
+      right: 20
+    }
   },
   fill: {
-    opacity: 0.8,
+    opacity: 0.8
   },
   tooltip: {
-    theme: "dark",
-  },
-};
+    theme: 'dark'
+  }
+}
 
-export default chartsConfig;
+export default chartsConfig

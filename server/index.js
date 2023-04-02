@@ -1,8 +1,8 @@
 import express from 'express'
 import musicRoutes from './music/index.js'
 
-const app = express();
+const app = express()
 
-app.use('/music', musicRoutes);
+app.use('/music', musicRoutes)
 
-export default app;
+export default app
