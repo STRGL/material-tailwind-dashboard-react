@@ -1,3 +1,4 @@
+/* eslint-disable new-cap */
 import * as dotenv from 'dotenv'
 import express from 'express'
 import queryString from 'querystring'
@@ -32,6 +33,7 @@ app.get('/login', (req, res) => {
 
 app.get('/callback', async (req, res) => {
   try {
+    console.log('CALLBACK FUNCTION')
     const code = req.query.code || null
 
     const response = await axios({
@@ -44,20 +46,21 @@ app.get('/callback', async (req, res) => {
       }),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        Authorization: `Basic ${new Buffer.From(
+        Authorization: `Basic ${new Buffer.from(
           `${CLIENT_ID}:${CLIENT_SECRET}`
         ).toString('base64')}`
       }
     })
 
     if (response.status === 200) {
-      const { accessToken, refreshToken } = response.data
+      // eslint-disable-next-line camelcase
+      const { access_token, refresh_token, expires_in } = response.data
 
       const queryParams = queryString.stringify({
-        accessToken,
-        refreshToken
+        access_token, // eslint-disable-line camelcase
+        refresh_token, // eslint-disable-line camelcase
+        expires_in // eslint-disable-line camelcase
       })
-
       res.redirect(`http://localhost:5173/dashboard/music/?${queryParams}`)
     } else {
       res.redirect(`/?${queryString.stringify({ error: 'invalid_token' })}`)
@@ -81,7 +84,7 @@ app.get('/refreshToken', async (req, res) => {
       }),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        Authorization: `Basic ${new Buffer.From(
+        Authorization: `Basic ${new Buffer.from(
           `${CLIENT_ID}:${CLIENT_SECRET}`
         ).toString('base64')}`
       }

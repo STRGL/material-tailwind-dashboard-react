@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom'
 import {
   Card,
   CardHeader,
@@ -7,10 +7,10 @@ import {
   Input,
   Checkbox,
   Button,
-  Typography,
-} from "@material-tailwind/react";
+  Typography
+} from '@material-tailwind/react'
 
-export function SignIn() {
+export function SignIn () {
   return (
     <>
       <img
@@ -41,7 +41,7 @@ export function SignIn() {
               Sign In
             </Button>
             <Typography variant="small" className="mt-6 flex justify-center">
-              Don't have an account?
+              Don&apos;t have an account?
               <Link to="/auth/sign-up">
                 <Typography
                   as="span"
@@ -57,7 +57,7 @@ export function SignIn() {
         </Card>
       </div>
     </>
-  );
+  )
 }
 
-export default SignIn;
+export default SignIn
