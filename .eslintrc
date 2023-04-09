@@ -17,8 +17,9 @@
     },
     "plugins": ["react", "prettier"],
     "rules": {
+        "indent": ["error", 2],
         "no-use-before-define": "off",
         "@typescript-eslint/no-use-before-define": ["error"],
-        "prettier/prettier": ["error"]
+        "prettier/prettier": 0
     }
 }

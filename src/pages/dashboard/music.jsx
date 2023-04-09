@@ -17,11 +17,11 @@ export function Music() {
       try {
         const { data } = await getCurrentUserProfile();
         setProfile(data);
-        console.log(data);
       } catch (error) {
         console.error(error);
       }
     }
+    
     fetchData();
   }, []);
 
@@ -33,12 +33,21 @@ export function Music() {
             className="App-link"
             href="http://localhost:8888/api/music/spotify/login"
           >
-            Log in to Spotify
+                        Log in to Spotify
           </a>
         ) : (
           <>
             <h1>Music Page</h1>
             <Button onClick={logout}>Logout</Button>
+            {profile && (
+              <div
+                className={`bg-[url(${profile.images[0].url})]`}
+              >
+                <h3>{profile.display_name}</h3>
+                <p>{profile.product}</p>
+                <p>{profile.followers.total}</p>
+              </div>
+            )}
           </>
         )}
       </header>
