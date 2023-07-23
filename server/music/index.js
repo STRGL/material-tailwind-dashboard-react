@@ -1,9 +1,9 @@
-import express from 'express'
+import express from "express"
 
-import spotifyRoutes from './spotify.js'
+import spotifyRoutes from "./spotify.js"
 
 const app = express()
 
-app.use('/spotify', spotifyRoutes)
+app.use("/spotify", spotifyRoutes)
 
 export default app

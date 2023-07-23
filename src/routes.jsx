@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import {
   HomeIcon,
   UserCircleIcon,
@@ -5,14 +6,14 @@ import {
   BellIcon,
   ArrowRightOnRectangleIcon,
   UserPlusIcon,
-  MusicalNoteIcon
-} from "@heroicons/react/24/solid";
-import { Home, Profile, Tables, Notifications, Music } from "@/pages/dashboard";
-import { SignIn, SignUp } from "@/pages/auth";
+  MusicalNoteIcon,
+} from "@heroicons/react/24/solid"
+import { Home, Profile, Tables, Notifications, Music } from "@/pages/dashboard"
+import { SignIn, SignUp } from "@/pages/auth"
 
 const icon = {
   className: "w-5 h-5 text-inherit",
-};
+}
 
 export const routes = [
   {
@@ -68,6 +69,6 @@ export const routes = [
       },
     ],
   },
-];
+]
 
-export default routes;
+export default routes
