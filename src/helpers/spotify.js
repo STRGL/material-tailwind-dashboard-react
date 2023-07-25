@@ -81,9 +81,9 @@ function getAccessToken() {
   const queryString = window.location.search
   const urlParams = new URLSearchParams(queryString)
   const queryParams = {
-    [LOCALSTORAGE_KEYS.accessToken]: urlParams.get("access_token"),
-    [LOCALSTORAGE_KEYS.refreshToken]: urlParams.get("refresh_token"),
-    [LOCALSTORAGE_KEYS.expireTime]: urlParams.get("expires_in"),
+    [LOCALSTORAGE_KEYS.accessToken]: urlParams.get("accessToken"),
+    [LOCALSTORAGE_KEYS.refreshToken]: urlParams.get("refreshToken"),
+    [LOCALSTORAGE_KEYS.expireTime]: urlParams.get("expiresIn"),
   }
   const hasError = urlParams.get("error")
 
@@ -96,7 +96,9 @@ function getAccessToken() {
   }
 
   if (queryParams[LOCALSTORAGE_KEYS.accessToken]) {
-    Object.keys(LOCALSTORAGE_KEYS).forEach((key) => window.localStorage.setItem(key, queryParams[key]))
+    Object.keys(LOCALSTORAGE_KEYS).forEach((key) =>
+      window.localStorage.setItem(LOCALSTORAGE_KEYS[key], queryParams[LOCALSTORAGE_KEYS[key]]),
+    )
 
     window.localStorage.setItem(LOCALSTORAGE_KEYS.timestamp, Date.now())
 

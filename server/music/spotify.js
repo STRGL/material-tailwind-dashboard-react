@@ -52,12 +52,12 @@ app.get("/callback", async (req, res) => {
 
     if (response.status === 200) {
       // eslint-disable-next-line camelcase
-      const { access_token, refresh_token, expires_in } = response.data
+      const { access_token: accessToken, refresh_token: refreshToken, expires_in: expiresIn } = response.data
 
       const queryParams = queryString.stringify({
-        access_token, // eslint-disable-line camelcase
-        refresh_token, // eslint-disable-line camelcase
-        expires_in, // eslint-disable-line camelcase
+        accessToken,
+        refreshToken,
+        expiresIn,
       })
       res.redirect(`http://localhost:5173/dashboard/music/?${queryParams}`)
     } else {
