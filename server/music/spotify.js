@@ -71,24 +71,26 @@ app.get("/callback", async (req, res) => {
 app.get("/refreshToken", async (req, res) => {
   console.log("REFRESH TOKEN REQ") // eslint-disable-line no-console
   try {
-    const { refreshToken } = req.query
+    const { refresh_token } = req.query // eslint-disable-line camelcase
 
     const response = await axios({
       method: "post",
       url: "https://accounts.spotify.com/api/token",
       data: queryString.stringify({
-        grant_type: "refreshToken",
-        refreshToken,
+        grant_type: "refresh_token",
+        refresh_token, // eslint-disable-line camelcase
       }),
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+        "content-type": "application/x-www-form-urlencoded",
         Authorization: `Basic ${new Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64")}`,
       },
     })
 
+    console.log("SENDING DATA") // eslint-disable-line no-console
     res.send(response.data)
   } catch (error) {
-    res.send(error)
+    console.log("SENDING ERROR") // eslint-disable-line no-console
+    res.status(error.response.status).send(error)
   }
 })
 
