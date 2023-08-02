@@ -1,4 +1,8 @@
+/* eslint-disable no-console */
 import axios from "axios"
+import * as dayjs from "dayjs"
+
+const dbg = true
 
 // Map for localStorage keys
 const LOCALSTORAGE_KEYS = {
@@ -22,25 +26,33 @@ const LOCALSTORAGE_VALUES = {
  * @returns {boolean} Whether or not the access token in localStorage has expired
  */
 const hasTokenExpired = () => {
-  const { accessToken, timestamp, expireTime } = LOCALSTORAGE_VALUES
+  if (dbg) console.debug("hasTokenExpired Running")
 
+  const { accessToken, timestamp, expireTime } = LOCALSTORAGE_VALUES
   if (!accessToken || !timestamp) {
+    if (dbg) console.debug("hasTokenExpired found no token. Returned", false)
     return false
   }
 
-  const millisecondsElapsed = Date.now() - Number(timestamp)
-  return millisecondsElapsed / 1000 > Number(expireTime)
+  const now = dayjs()
+  const timestampFormatted = dayjs(Number(timestamp))
+
+  if (dbg) console.debug("hasTokenExpired returned", timestampFormatted.add(Number(expireTime), "seconds") < now)
+  return timestampFormatted.add(Number(expireTime), "seconds") < now
 }
 
 /**
  ** Clear out all localStorage items we've set and reload the page
  * @returns {void}
  */
-export const logout = () => {
+export const logout = (refreshPage = true) => {
+  if (dbg) console.debug("logout Running")
+
   // Clear all localStorage items
   Object.keys(LOCALSTORAGE_KEYS).forEach((key) => window.localStorage.removeItem(LOCALSTORAGE_KEYS[key]))
-
-  window.location = window.location.origin + window.location.pathname
+  if (refreshPage) {
+    window.location = window.location.origin + window.location.pathname
+  }
 }
 
 /**
@@ -48,27 +60,28 @@ export const logout = () => {
  ** in our Node app, then update values in localStorage with data from response.
  * @returns {void}
  */
-const refreshToken = async () => {
+async function refreshToken() {
+  if (dbg) console.debug("refreshToken Running")
   try {
-    if (
-      !LOCALSTORAGE_VALUES.refreshToken ||
-      LOCALSTORAGE_VALUES.refreshToken === "undefined" ||
-      Date.now() - Number(LOCALSTORAGE_VALUES.timestamp) / 1000 < 1000
-    ) {
-      console.error("No refresh token available")
+    if (!LOCALSTORAGE_VALUES.refreshToken || LOCALSTORAGE_VALUES.refreshToken === "undefined") {
+      console.debug("No refresh token available. Logging user out")
       logout()
     }
 
-    const { data } = await axios.get(
-      `/api/music/spotify/refresh_token?refresh_token=${LOCALSTORAGE_VALUES.refreshToken}`,
+    const response = await axios.get(
+      `/api/music/spotify/refreshToken?refresh_token=${LOCALSTORAGE_VALUES.refreshToken}`,
     )
 
-    window.localStorage.setItem(LOCALSTORAGE_KEYS.accessToken, data.access_token)
-    window.localStorage.setItem(LOCALSTORAGE_KEYS.timestamp, Date.now())
+    if (dbg) console.debug("refreshToken returned", response)
 
-    window.location.reload()
+    if (response?.data?.access_token) {
+      window.localStorage.setItem(LOCALSTORAGE_KEYS.accessToken, response.data.access_token)
+      window.localStorage.setItem(LOCALSTORAGE_KEYS.timestamp, Date.now())
+      window.localStorage.setItem(LOCALSTORAGE_KEYS.expireTime, response.data.expires_in)
+    }
   } catch (e) {
     console.error(e)
+    logout()
   }
 }
 
@@ -78,6 +91,7 @@ const refreshToken = async () => {
  * @returns {string} A Spotify access token
  */
 function getAccessToken() {
+  if (dbg) console.debug("getAccessToken Running")
   const queryString = window.location.search
   const urlParams = new URLSearchParams(queryString)
   const queryParams = {
@@ -85,23 +99,49 @@ function getAccessToken() {
     [LOCALSTORAGE_KEYS.refreshToken]: urlParams.get("refreshToken"),
     [LOCALSTORAGE_KEYS.expireTime]: urlParams.get("expiresIn"),
   }
+  if (dbg) console.debug("Got the following from the query Params", queryParams)
+
   const hasError = urlParams.get("error")
 
   if (hasError || hasTokenExpired() || LOCALSTORAGE_VALUES.accessToken === "undefined") {
+    if (dbg) console.debug("getAccessToken called refreshToken")
+    Object.keys(LOCALSTORAGE_KEYS).forEach((key) => {
+      if (key !== "refreshToken") {
+        if (dbg)
+          console.debug(
+            `Removing ${LOCALSTORAGE_KEYS[key]} with value ${queryParams[LOCALSTORAGE_KEYS[key]]} from localStorage`,
+          )
+        window.localStorage.removeItem(LOCALSTORAGE_KEYS[key])
+      }
+    })
     refreshToken()
   }
 
   if (LOCALSTORAGE_VALUES.accessToken && LOCALSTORAGE_VALUES.accessToken !== "undefined") {
+    if (dbg) console.debug("getAccessToken returned from localStorage", LOCALSTORAGE_VALUES.accessToken)
     return LOCALSTORAGE_VALUES.accessToken
   }
 
   if (queryParams[LOCALSTORAGE_KEYS.accessToken]) {
-    Object.keys(LOCALSTORAGE_KEYS).forEach((key) =>
-      window.localStorage.setItem(LOCALSTORAGE_KEYS[key], queryParams[LOCALSTORAGE_KEYS[key]]),
-    )
+    if (dbg) console.debug("getAccessToken found in localStorage")
+    Object.keys(LOCALSTORAGE_KEYS).forEach((key) => {
+      if (dbg)
+        console.debug(
+          `Setting ${LOCALSTORAGE_KEYS[key]} with value ${queryParams[LOCALSTORAGE_KEYS[key]]} in localStorage`,
+        )
+      window.localStorage.setItem(LOCALSTORAGE_KEYS[key], queryParams[LOCALSTORAGE_KEYS[key]])
+    })
 
+    if (dbg) console.debug("Setting localStorage timestamp with value", Date.now(), new Date())
     window.localStorage.setItem(LOCALSTORAGE_KEYS.timestamp, Date.now())
+    window.location.search = ""
 
+    if (dbg)
+      console.debug(
+        "getAccessToken found in queryParams",
+        queryParams[LOCALSTORAGE_KEYS.accessToken],
+        `at ${new Date()}`,
+      )
     return queryParams[LOCALSTORAGE_KEYS.accessToken]
   }
 
@@ -119,13 +159,11 @@ axios.defaults.headers["Content-Type"] = "application/json"
  ** https://developer.spotify.com/documentation/web-api/reference/#endpoint-get-current-users-profile
  * @returns {Promise}
  */
-export function getCurrentUserProfile() {
-  return axios.get("/me")
-}
+export const getCurrentUserProfile = () => axios.get("/me")
 
 /**
- * Get a List of Current User's Playlists
- * https://developer.spotify.com/documentation/web-api/reference/#endpoint-get-a-list-of-current-users-playlists
+ ** Get a List of Current User's Playlists
+ ** https://developer.spotify.com/documentation/web-api/reference/#endpoint-get-a-list-of-current-users-playlists
  * @returns {Promise}
  */
 export const getCurrentUserPlaylists = (limit = 20) => axios.get(`/me/playlists?limit=${limit}`)
